@@ -1,0 +1,750 @@
+# SOFTWARE REQUIREMENTS SPECIFICATION (SRS)
+
+# MoSJE Centralized De-Addiction & Counselling Management System
+
+---
+
+# 1. INTRODUCTION
+
+## 1.1 Purpose of the Document
+
+This Software Requirements Specification (SRS) document defines the complete functional, technical, operational, architectural, and deployment requirements for the proposed "MoSJE Centralized De-Addiction & Counselling Management System".
+
+The purpose of this system is to digitally transform and centralize rehabilitation, counselling, and beneficiary tracking processes across all de-addiction and rehabilitation facilities supported under the Ministry of Social Justice and Empowerment (MoSJE).
+
+Currently, rehabilitation centers operate independently and maintain records manually or in isolated software systems. This creates multiple operational problems:
+
+* Lack of centralized beneficiary tracking
+* No unified national database
+* Difficulties in monitoring counselling interventions
+* Poor visibility into relapse statistics
+* Inability to perform state-wise or center-wise analytics
+* Manual reporting burden
+* Difficulty in measuring treatment effectiveness
+* Inconsistent follow-up monitoring
+* Poor coordination between rehabilitation centers
+* Lack of real-time data access for government stakeholders
+
+The proposed platform aims to eliminate these inefficiencies through a secure centralized web platform.
+
+---
+
+## 1.2 Problem Statement
+
+Details of counselling and de-addiction interventions provided to beneficiaries at facilities supported by MoSJE are not available on a single platform. This limits the ability to perform patient-wise, center-wise, district-wise, and state-wise analysis of services provided, beneficiaries reached, treatment effectiveness, relapse rates, and rehabilitation outcomes.
+
+As a result:
+
+* Government authorities cannot accurately measure rehabilitation performance.
+* Patient history becomes fragmented between centers.
+* Referrals are difficult to manage.
+* Reporting consumes excessive administrative effort.
+* Follow-up tracking becomes inconsistent.
+* Relapse monitoring is weak.
+* Data-driven decision making becomes difficult.
+
+The proposed system addresses these limitations by introducing a centralized digital ecosystem.
+
+---
+
+# 2. PROJECT OBJECTIVES
+
+The major objectives of the system are:
+
+## 2.1 Centralized Beneficiary Management
+
+To create a unified national platform for maintaining beneficiary records across all MoSJE-supported rehabilitation centers.
+
+## 2.2 Counselling & Rehabilitation Tracking
+
+To digitally record all counselling sessions, treatment plans, relapse incidents, rehabilitation progress, and follow-up activities.
+
+## 2.3 State-Wise and Center-Wise Analytics
+
+To provide real-time dashboards and analytical reports for monitoring:
+
+* Number of active beneficiaries
+* Recovery trends
+* Relapse statistics
+* Center performance
+* Counsellor performance
+* State-wise intervention effectiveness
+
+## 2.4 Referral Management
+
+To streamline transfer of patients between rehabilitation centers while preserving complete treatment history.
+
+## 2.5 TeleCounselling Enablement
+
+To provide online counselling facilities for remote patients or emergency follow-up sessions.
+
+## 2.6 Government Reporting
+
+To simplify ministry-level reporting through automated PDF and Excel report generation.
+
+---
+
+# 3. SYSTEM OVERVIEW
+
+The system is a web-based centralized rehabilitation management platform developed using Laravel 12 and Blade.
+
+The platform follows a modular architecture where each module is responsible for handling a specific business process.
+
+The application is divided into:
+
+* Authentication Layer
+* Role Management Layer
+* Patient Management Module
+* Counselling Management Module
+* Referral Module
+* Analytics Module
+* Reporting Module
+* Notification System
+* Audit & Compliance Layer
+* TeleCounselling Layer
+
+The system is designed to support multiple rehabilitation centers simultaneously while maintaining secure separation of center-level data.
+
+---
+
+# 4. TECHNOLOGY STACK
+
+| Component            | Technology                 | Purpose                        |
+| -------------------- | -------------------------- | ------------------------------ |
+| Backend Framework    | Laravel 12                 | Core application framework     |
+| Programming Language | PHP 8.3+                   | Server-side development        |
+| Frontend             | Blade + Bootstrap 5        | Responsive UI rendering        |
+| Database             | MySQL                      | Relational data storage        |
+| Database Hosting     | Aiven                      | Managed cloud database hosting |
+| Authentication       | Laravel Breeze             | Authentication scaffolding     |
+| RBAC                 | Spatie Laravel Permission  | Role and permission management |
+| Queue System         | Redis + Laravel Queues     | Background processing          |
+| Notifications        | Laravel Notifications      | Email/SMS/In-app alerts        |
+| Charts               | ApexCharts / Chart.js      | Data visualization             |
+| Reporting            | Laravel Excel + DomPDF     | Export generation              |
+| TeleCounselling      | Jitsi / WebRTC             | Video counselling              |
+| Version Control      | Git + GitHub               | Source code management         |
+| Scrum Tracking       | GitHub Issues + GitHub CLI | Agile project tracking         |
+
+---
+
+# 5. SYSTEM ARCHITECTURE
+
+The project follows enterprise-level layered architecture principles.
+
+## 5.1 MVC Architecture
+
+The project follows Laravel's MVC (Model-View-Controller) architecture.
+
+### Models
+
+Responsible for:
+
+* Database interaction
+* Relationships
+* Query scopes
+* Business entities
+
+Examples:
+
+* Patient
+* Referral
+* CounsellingSession
+* Appointment
+
+### Views
+
+Implemented using Blade templates.
+
+Responsible for:
+
+* UI rendering
+* Dashboard visualization
+* Form handling
+* Responsive layouts
+
+### Controllers
+
+Responsible for:
+
+* Request handling
+* Validation coordination
+* Service layer communication
+* Response generation
+
+---
+
+## 5.2 Service Layer Architecture
+
+Business logic is separated from controllers using Service Classes.
+
+Example:
+
+PatientController → PatientService → PatientRepository → Database
+
+Advantages:
+
+* Cleaner architecture
+* Easier testing
+* Better maintainability
+* Reusable business logic
+
+---
+
+## 5.3 Repository Pattern
+
+Repositories abstract complex database queries.
+
+Example repositories:
+
+* DashboardRepository
+* PatientRepository
+* ReferralRepository
+
+Purpose:
+
+* Avoid query duplication
+* Centralize database logic
+* Improve scalability
+
+---
+
+## 5.4 Queue Based Processing
+
+Heavy operations will execute asynchronously using Laravel Queues.
+
+Examples:
+
+* Sending SMS reminders
+* Report generation
+* Dashboard analytics processing
+* Email notifications
+
+Benefits:
+
+* Faster UI response time
+* Reduced server blocking
+* Better scalability
+
+---
+
+# 6. DETAILED MODULE DESCRIPTIONS
+
+## 6.1 Authentication & Authorization Module
+
+This module controls system access and security.
+
+### Features
+
+* User login
+* Password reset
+* Session management
+* Role assignment
+* Permission assignment
+* Access restriction
+* Route protection
+* Login activity logging
+
+### User Flow
+
+1. User enters credentials.
+2. Laravel Breeze validates credentials.
+3. System checks assigned role.
+4. Role-based middleware determines accessible routes.
+5. Dashboard is loaded according to role.
+
+### Security Measures
+
+* Password hashing using bcrypt
+* CSRF protection
+* Session timeout
+* Brute force protection
+* Rate limiting
+
+---
+
+## 6.2 Patient Management Module
+
+This is the core module of the application.
+
+The module manages the complete lifecycle of a rehabilitation beneficiary.
+
+### Features
+
+#### Patient Registration
+
+The system allows counsellors or clerks to register a new beneficiary.
+
+Captured information includes:
+
+* Full name
+* Gender
+* Date of birth
+* Contact information
+* Emergency contact
+* Address
+* Aadhaar details
+* Substance abuse history
+* Guardian information
+* Initial assessment
+
+#### Patient Profile Dashboard
+
+Each patient has a dedicated dashboard displaying:
+
+* Medical history
+* Counselling history
+* Relapse history
+* Appointments
+* Referral history
+* Uploaded documents
+* Treatment timeline
+
+#### Document Management
+
+The system supports document uploads:
+
+* Aadhaar scans
+* Medical reports
+* Prescriptions
+* Referral letters
+* Consent forms
+
+#### Search & Filters
+
+Advanced filters:
+
+* Name
+* Phone number
+* Patient ID
+* Center
+* State
+* Substance type
+* Counsellor
+* Registration date
+
+### Workflow
+
+1. Clerk/Counsellor registers patient.
+2. Validation rules execute.
+3. Patient ID generated.
+4. Patient assigned to center.
+5. Initial counselling session scheduled.
+6. Follow-up process begins.
+
+---
+
+## 6.3 Counselling Management Module
+
+This module records all counselling and rehabilitation interactions.
+
+### Session Types
+
+* Individual counselling
+* Group counselling
+* Family counselling
+* Emergency intervention
+* TeleCounselling
+
+### Counselling Session Data
+
+* Session date
+* Session duration
+* Counsellor details
+* Notes
+* Mood assessment
+* Progress status
+* Follow-up recommendation
+
+### Relapse Tracking
+
+The system tracks relapse events including:
+
+* Relapse date
+* Severity level
+* Substance involved
+* Trigger factors
+* Immediate intervention
+* Recovery actions
+
+### Follow-Up System
+
+Follow-up reminders are generated automatically after sessions.
+
+The system maintains:
+
+* Pending follow-ups
+* Missed follow-ups
+* Completed follow-ups
+* High-risk patients
+
+---
+
+## 6.4 Appointment Management Module
+
+This module handles scheduling and appointment tracking.
+
+### Features
+
+* Appointment booking
+* Rescheduling
+* Calendar visualization
+* Counsellor availability
+* Automated reminders
+* Appointment status management
+
+### Appointment Statuses
+
+* Scheduled
+* Confirmed
+* Cancelled
+* Completed
+* Missed
+
+### Notification Flow
+
+1. Appointment created.
+2. Notification job dispatched.
+3. SMS/Email sent.
+4. Reminder sent before appointment.
+5. Status updated after session.
+
+---
+
+## 6.5 Referral Management Module
+
+This module manages transfer of patients between rehabilitation centers.
+
+### Features
+
+* Referral request generation
+* Referral approval workflow
+* Inter-center communication
+* Referral history
+* Transfer status tracking
+
+### Referral Workflow
+
+1. Counsellor initiates referral.
+2. Target center receives request.
+3. Center admin reviews patient history.
+4. Referral accepted or rejected.
+5. Patient transferred.
+6. Treatment continuity maintained.
+
+---
+
+## 6.6 Dashboard & Analytics Module
+
+This module provides real-time analytics.
+
+### Dashboard Types
+
+#### Super Admin Dashboard
+
+Displays:
+
+* National patient statistics
+* State-wise analytics
+* Recovery trends
+* Active centers
+* Counsellor performance
+* Referral metrics
+
+#### State Dashboard
+
+Displays:
+
+* District-wise patient distribution
+* Center performance
+* Relapse statistics
+* Monthly treatment trends
+
+#### Center Dashboard
+
+Displays:
+
+* Daily appointments
+* Pending follow-ups
+* Recovery rate
+* Counsellor workload
+
+### Analytics Features
+
+* Graph visualization
+* Heatmaps
+* Comparative analysis
+* Trend analysis
+* Relapse prediction indicators
+
+---
+
+## 6.7 Reporting System
+
+The reporting module generates ministry-level operational reports.
+
+### Export Formats
+
+* PDF
+* Excel
+* CSV
+
+### Report Types
+
+* Monthly center reports
+* State summary reports
+* Patient recovery reports
+* Counselling activity reports
+* Relapse analysis reports
+* Follow-up compliance reports
+
+### Report Workflow
+
+1. User selects filters.
+2. Report job dispatched.
+3. Queue generates report.
+4. File stored securely.
+5. Download notification sent.
+
+---
+
+## 6.8 TeleCounselling Module
+
+This module enables remote counselling sessions.
+
+### Features
+
+* Video session scheduling
+* Secure meeting links
+* Session logging
+* Session history
+* Tele-session reminders
+
+### Workflow
+
+1. Counsellor schedules tele-session.
+2. Meeting link generated.
+3. Patient receives notification.
+4. Session conducted.
+5. Notes stored.
+6. Follow-up generated.
+
+---
+
+## 6.9 Notification System
+
+The notification system provides automated communication.
+
+### Channels
+
+* SMS
+* Email
+* In-app notifications
+
+### Trigger Events
+
+* Appointment reminders
+* Follow-up reminders
+* Referral approval
+* Session scheduling
+* Password reset
+* Report generation completion
+
+### Queue Jobs
+
+* SendAppointmentReminder
+* SendReferralNotification
+* SendFollowUpReminder
+* SendReportNotification
+
+---
+
+## 6.10 Audit & Compliance Module
+
+This module ensures transparency and accountability.
+
+### Logged Actions
+
+* Login/logout
+* Record creation
+* Record update
+* Record deletion
+* Permission changes
+* Report exports
+
+### Stored Metadata
+
+* User ID
+* IP address
+* Timestamp
+* Old values
+* New values
+* Action type
+
+Purpose:
+
+* Legal compliance
+* Security monitoring
+* Investigation support
+* Traceability
+
+---
+
+# 7. DATABASE DESIGN
+
+The database follows normalized relational structure.
+
+Major entities:
+
+* Users
+* Roles
+* Permissions
+* Patients
+* Counselling Sessions
+* Appointments
+* Referrals
+* Notifications
+* Audit Logs
+* Reports
+
+Foreign key relationships maintain data consistency.
+
+Indexes are added on:
+
+* patient_id
+* center_id
+* counsellor_id
+* state_id
+* appointment_date
+
+Purpose:
+
+* Faster search
+* Faster analytics
+* Better dashboard performance
+
+---
+
+# 8. DEPLOYMENT ARCHITECTURE
+
+## Infrastructure Components
+
+### Application Server
+
+Hosts Laravel application.
+
+### Database Server
+
+Managed MySQL hosted on Aiven.
+
+### Queue Worker
+
+Processes notifications and reports.
+
+### Redis Server
+
+Handles caching and queues.
+
+### Load Balancer
+
+Distributes requests across servers.
+
+---
+
+## Deployment Flow
+
+1. Developer pushes code to GitHub.
+2. GitHub Actions executes tests.
+3. Build deployed to staging.
+4. Production deployment executed.
+5. Database migrations run.
+6. Queue workers restarted.
+
+---
+
+# 9. SCRUM EXECUTION & TRACEABILITY
+
+The project follows Agile Scrum methodology.
+
+Each SRS module is mapped directly to GitHub Issues.
+
+This ensures:
+
+* Requirement traceability
+* Sprint tracking
+* Progress monitoring
+* Easier development coordination
+* Easier debugging
+
+## Sprint Distribution
+
+### Sprint 1
+
+* Project setup
+* Authentication
+* RBAC
+* Database setup
+
+### Sprint 2
+
+* Patient module
+* Document uploads
+* Search filters
+
+### Sprint 3
+
+* Counselling module
+* Follow-ups
+* Appointments
+
+### Sprint 4
+
+* Referrals
+* Dashboards
+* Analytics
+
+### Sprint 5
+
+* Notifications
+* TeleCounselling
+* Reporting
+
+### Sprint 6
+
+* Security
+* Audit logging
+* Testing
+* Deployment
+* Documentation
+
+---
+
+# 10. CONCLUSION
+
+The proposed MoSJE Centralized De-Addiction & Counselling Management System is designed as a scalable, secure, modular, analytics-driven rehabilitation management platform.
+
+The system goes beyond a basic CRUD application by implementing:
+
+* Enterprise architecture principles
+* Government-grade reporting
+* Queue-based processing
+* Audit logging
+* Real-time analytics
+* Role-based security
+* Centralized beneficiary tracking
+* TeleCounselling capabilities
+* Agile Scrum execution planning
+
+The integration of GitHub issue traceability with SRS modules further improves maintainability, development clarity, sprint planning, and implementation tracking.
+
+This document acts as:
+
+* Functional specification
+* Technical blueprint
+* Development roadmap
+* Scrum planning reference
+* Team onboarding guide
+* Deployment reference
+* Traceability document
+
+for the complete project lifecycle.
